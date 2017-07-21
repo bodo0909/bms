@@ -1,14 +1,20 @@
 package main
 
+//import "fmt"
+
 type bitmap struct {
 	size   int
 	values []bool
+	right_neighbors []int
+	down_neighbors []int
 }
 
 func NewBitmap(size int) *bitmap {
 	b := new(bitmap)
 	b.size = size
 	b.values = make([]bool, size*size)
+	b.right_neighbors = make([]int, 0)
+	b.down_neighbors = make([]int, 0)
 
 	return b
 }
@@ -157,4 +163,58 @@ func (b bitmap) CompareTranslation(c *bitmap, delta_i int, delta_j int) bool {
 		}
 	}
 	return true
+}
+
+
+func (b *bitmap) fillNeighbors() {
+
+	//get info for right neighbors
+	base2 := 1
+	right_base := 0
+	right_values := make([]int,0)
+	for i, j := range b.values {
+		if i%b.size > 0 {
+			if j {
+				right_base += base2
+			}
+			base2 *= 2
+			if i%b.size == b.size-1 {
+				right_values = append(right_values, base2)
+				base2 *= 2
+			}
+		}
+	}
+	b.right_neighbors = getCombinations(right_base, right_values)
+
+	//get info for down neighbors
+	base2 = 1
+	down_base := 0
+	down_values := make([]int,0)
+	for i, j := range b.values {
+		if i>=b.size{
+			if j {
+				down_base += base2
+			}
+			base2 *= 2
+		}
+	}
+	for i:=0; i<b.size; i++ {
+		down_values = append(down_values, base2)
+		base2 *= 2
+	}
+	b.down_neighbors = getCombinations(down_base, down_values)
+
+}
+
+
+func getCombinations(base int, values []int) []int{
+	var list []int
+	if len(values) == 1 {
+		list = make([]int, 2)
+		list[0] = base
+		list[1] = base+values[0]
+	} else {
+		list = append(getCombinations(base, values[1:]), getCombinations(base+values[0], values[1:])...)
+	}
+	return list
 }

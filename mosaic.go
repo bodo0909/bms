@@ -1,6 +1,9 @@
 package main
 
-import "strconv"
+import (
+	"strconv"
+	"fmt"
+)
 
 type mosaic struct {
 	size_i   int
@@ -26,12 +29,13 @@ func (m *mosaic) set(I int, J int, b bitmap) {
 		m.size_j = J+1
 	}
 	if I >= m.size_i {
-		for i := m.size_i; i < I; i++ {
+		for i := m.size_i; i <= I; i++ {
 			m.bitmaps = append(m.bitmaps, make([]bitmap, m.size_j))
 		}
 		m.size_i = I+1
 	}
 
+	fmt.Println(len(m.bitmaps))
 	//set value
 	m.bitmaps[I][J] = b
 }
